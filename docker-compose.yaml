@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
+  app:
+    build:
+      context: .
+    volumes:
+      - .:/app
+    command: php-fpm
