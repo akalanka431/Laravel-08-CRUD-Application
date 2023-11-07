@@ -1,70 +1,50 @@
-version: '3.8'
-
+version: "3.8"
 services:
+    nginx:
+        build:
+            context: .
+            dockerfile: ./docker/nginx.Dockerfile
+        image: 999999999999.dkr.ecr.us-east-1.amazonaws.com/laravel:nginx
+        restart: always
+        depends_on:
+            - php
+        ports:
+            - "80"
+        networks:
+            - default
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    # cpus: "0.50"
+                    memory: 50M
+                reservations:
+                    # cpus: "0.25"
+                    memory: 30M
+            restart_policy:
+                condition: any
+                delay: 5s
+                window: 120s
 
-  # Web Server Service
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    ports:
-      - "8080:80"
-    volumes:
-      - ./src:/var/www
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
-    depends_on:
-      - app
-      - db
-
-  #Database Service
-  # db:
-  #   image : mysql
-  #   container_name : mysql
-  #   volumes:
-  #     - ./mysql/data:/var/lib/mysql
-  #   ports:
-  #     - "3306:3306"
-  #   environment:
-  #     MYSQL_DATABASE: blog
-  #     MYSQL_ROOT_PASSWORD: password
-  db:
-    image: postgres
-    container_name: postgres
-    volumes:
-      - ./postgresql/data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    environment: 
-      POSTGRES_DB: blog
-      POSTGRES_USER: root 
-      POSTGRES_PASSWORD: password 
-
-  # Application Service
-  app:
-    container_name: blog
-    build: 
-      context: ./php
-      dockerfile: Dockerfile
-    volumes:
-      - ./src:/var/www
-    ports:
-      - "9000:9000"
-    working_dir: /var/www
-
-  #phpMyAdmin Service
-  # phpmyadmin:
-  #   image: phpmyadmin/phpmyadmin
-  #   container_name: phpmyadmin
-  #   ports:
-  #     - "3400:80"
-  #   depends_on:
-  #     - db
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgAdmin
-    ports:
-      - "5050:80"
-    depends_on:
-      - db 
-    environment:
-      PGADMIN_DEFAULT_EMAIL: hanieasemi76@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: password 
+    php:
+        build:
+            context: .
+            dockerfile: ./docker/php.Dockerfile
+        image: 999999999999.dkr.ecr.us-east-1.amazonaws.com/laravel:php
+        working_dir: /app
+        env_file: .env
+        restart: always
+        expose:
+            - "9000"
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    # cpus: "0.50"
+                    memory: 128M
+                reservations:
+                    # cpus: "0.25"
+                    memory: 64M
+            restart_policy:
+                condition: any
+                window: 120s
