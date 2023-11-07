@@ -3,7 +3,7 @@ services:
     nginx:
         build:
             context: .
-            dockerfile: ./docker/nginx.Dockerfile
+            dockerfile: ./docker_files/nginx.Dockerfile
         image: 999999999999.dkr.ecr.us-east-1.amazonaws.com/laravel:nginx
         restart: always
         depends_on:
@@ -29,7 +29,7 @@ services:
     php:
         build:
             context: .
-            dockerfile: ./docker/php.Dockerfile
+            dockerfile: ./docker_files/php.Dockerfile
         image: 999999999999.dkr.ecr.us-east-1.amazonaws.com/laravel:php
         working_dir: /app
         env_file: .env
